@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Amplify, Auth, Hub } from "aws-amplify";
+import { Amplify } from "aws-amplify";
+import { signOut, getCurrentUser, fetchAuthSession } from "aws-amplify/auth";
+import { Hub } from "aws-amplify/utils";
 import BookList from "./components/BookList";
 import AddBookForm from "./components/AddBookForm";
 import EditBookForm from "./components/EditBookForm";
@@ -17,13 +19,12 @@ Amplify.configure({
     identityPoolId: awsConfig.cognito.IDENTITY_POOL_ID,
   },
   API: {
-    endpoints: [
-      {
-        name: "booksApi",
+    REST: {
+      books: {
         endpoint: awsConfig.apiGateway.URL,
         region: awsConfig.apiGateway.REGION,
       },
-    ],
+    },
   },
 });
 
@@ -56,28 +57,30 @@ function App() {
     });
   }, []);
 
-  const checkAuthStatus = async () => {
+  async function checkAuthStatus() {
     try {
-      const userData = await Auth.currentAuthenticatedUser();
+      // Get authenticated user
+      const currentUser = await getCurrentUser();
+      // Get session info
+      const session = await fetchAuthSession();
       setIsAuthenticated(true);
-      setUser(userData);
-    } catch (error) {
+      setUser(currentUser);
+    } catch (err) {
       setIsAuthenticated(false);
       setUser(null);
-    } finally {
-      setLoading(false);
     }
-  };
+    setLoading(false);
+  }
 
-  const handleSignOut = async () => {
+  async function handleSignOut() {
     try {
-      await Auth.signOut();
+      await signOut();
       setIsAuthenticated(false);
       setUser(null);
-    } catch (error) {
-      console.error("Error signing out:", error);
+    } catch (err) {
+      console.error("Error signing out:", err);
     }
-  };
+  }
 
   const handleBookAdded = () => {
     setRefreshData((prev) => !prev);

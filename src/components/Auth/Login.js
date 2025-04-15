@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Auth } from "aws-amplify";
+import { signIn } from "aws-amplify/auth";
 
 const Login = ({ onSignUp, onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +20,7 @@ const Login = ({ onSignUp, onSuccess }) => {
     setError(null);
 
     try {
-      await Auth.signIn(formData.username, formData.password);
+      await signIn(formData.username, formData.password);
       onSuccess();
     } catch (err) {
       console.error("Auth error:", err);

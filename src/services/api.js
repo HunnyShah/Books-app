@@ -1,68 +1,82 @@
-import { Auth } from "aws-amplify";
-import { API } from "aws-amplify";
+// src/api.js
+import { get, post, put, del } from "aws-amplify/api";
 
-export const getAllBooks = async () => {
-  const token = (await Auth.currentSession()).getIdToken().getJwtToken();
+const apiName = "booksApi";
 
+// export const fetchBooks = async () => {
+//   const response = await API.get(apiName, "/books");
+//   return response;
+// };
+
+export const fetchBooks = async () => {
   try {
-    const response = await API.get("booksApi", "/books", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    const response = await get({
+      apiName: "books",
+      path: "/books",
     });
-    return response;
+    return response.body;
   } catch (error) {
     console.error("Error fetching books:", error);
     throw error;
   }
 };
 
-export const addBook = async (bookData) => {
-  const token = (await Auth.currentSession()).getIdToken().getJwtToken();
+// export const addBook = async (book) => {
+//   const response = await API.post(apiName, "/books", {
+//     body: book,
+//   });
+//   return response;
+// };
 
+export const addBook = async (book) => {
   try {
-    const response = await API.post("booksApi", "/books", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: bookData,
+    const response = await post({
+      apiName: "books",
+      path: "/books",
+      body: book,
     });
-    return response;
+    return response.body;
   } catch (error) {
-    console.error("Error adding book:", error);
+    console.error("Error adding books:", error);
     throw error;
   }
 };
 
-export const updateBook = async (bookId, bookData) => {
-  const token = (await Auth.currentSession()).getIdToken().getJwtToken();
-
-  try {
-    const response = await API.put("booksApi", `/books/${bookId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: bookData,
-    });
-    return response;
-  } catch (error) {
-    console.error("Error updating book:", error);
-    throw error;
-  }
-};
+// export const deleteBook = async (bookId) => {
+//   const response = await API.del(apiName, `/books/${bookId}`);
+//   return response;
+// };
 
 export const deleteBook = async (bookId) => {
-  const token = (await Auth.currentSession()).getIdToken().getJwtToken();
-
   try {
-    const response = await API.del("booksApi", `/books/${bookId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    const response = await del({
+      apiName: "books",
+      path: `/books/${bookId}`,
     });
-    return response;
+    return response.body;
   } catch (error) {
-    console.error("Error deleting book:", error);
+    console.error("Error deleting books:", error);
+    throw error;
+  }
+};
+
+// export const updateBook = async (bookId, updatedBook) => {
+//   const response = await API.put(apiName, `/books/${bookId}`, {
+//     body: updatedBook,
+//   });
+//   return response;
+// };
+
+export const updateBook = async (bookId, updatedBook) => {
+  try {
+    const response = await put({
+      apiName: "books",
+      path: `/books/${bookId}`,
+      body: updatedBook,
+    });
+    return response.body;
+  } catch (error) {
+    console.error("Error updating books:", error);
     throw error;
   }
 };

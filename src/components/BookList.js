@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { getAllBooks, deleteBook } from "../services/api";
+import { fetchBooks, deleteBook } from "../services/api";
+import { signOut } from "@aws-amplify/auth";
 
 const BookList = ({ onEdit }) => {
   const [books, setBooks] = useState([]);
@@ -9,7 +10,7 @@ const BookList = ({ onEdit }) => {
   const fetchBooks = async () => {
     try {
       setLoading(true);
-      const data = await getAllBooks();
+      const data = await fetchBooks();
       setBooks(data);
       setError(null);
     } catch (err) {
@@ -34,6 +35,10 @@ const BookList = ({ onEdit }) => {
         console.error(err);
       }
     }
+  };
+
+  const handleLogout = async () => {
+    await signOut();
   };
 
   if (loading) return <div>Loading books...</div>;
@@ -67,6 +72,7 @@ const BookList = ({ onEdit }) => {
                   Delete
                 </button>
               </div>
+              <button onClick={handleLogout}>Logout</button>
             </div>
           ))}
         </div>
